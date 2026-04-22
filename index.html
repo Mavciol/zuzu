@@ -73,9 +73,32 @@
             100% { transform: translate(8vw, 8vh) scale(1.1); }
         }
 
-        /* Splash Screen */
-        #splash-screen {
-            position: absolute;
+        /* Intro Screen */
+        #intro-screen {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            transition: opacity 1s ease;
+        }
+
+        #intro-logo {
+            width: 80vw;
+            max-width: 350px;
+            animation: pulseLogo 2s infinite alternate;
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* Menu Screen */
+        #menu-screen {
+            position: fixed;
             inset: 0;
             background: linear-gradient(135deg, #1a0b2e 0%, #4a2c7a 50%, #2b1055 100%);
             display: flex;
@@ -84,15 +107,13 @@
             align-items: center;
             z-index: 100;
             transition: opacity 1s ease;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        #splash-logo {
-            width: 80vw;
-            max-width: 350px;
-            animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-            margin-bottom: 30px;
-            margin-top: 20px;
+        #menu-screen.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .gradient-text {
@@ -102,7 +123,7 @@
             font-size: 5.5rem;
             font-weight: 900;
             margin-top: 0;
-            margin-bottom: 0;
+            margin-bottom: 30px;
             text-align: center;
             line-height: 1.1;
             filter: drop-shadow(2px 4px 6px rgba(255, 117, 140, 0.3));
@@ -142,61 +163,221 @@
         #menu-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
         }
 
         /* Game UI */
         #game-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
             display: none;
             flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
+            width: 100vw;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
             z-index: 1;
+            position: relative;
         }
 
-        #header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+        #top-ui {
+            flex: 0 0 auto;
             width: 100%;
             max-width: 500px;
-            padding: 0 15px;
-            margin-bottom: 15px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .top-row, .mid-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            align-items: stretch;
+            justify-content: space-between;
+        }
+
+        .mid-row {
+            align-items: center;
         }
 
         .stat-box {
             background: var(--panel-bg);
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 1.2rem;
+            padding: 5px 8px;
+            border-radius: 12px;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             border: 2px solid white;
             text-align: center;
             backdrop-filter: blur(5px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .stat-box span {
-            display: block;
-            font-size: 0.8rem;
+        .stat-box span.lbl {
+            font-size: 0.7rem;
             color: #718096;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
+            letter-spacing: 0.5px;
         }
 
+        .stat-box span.val {
+            font-size: 1.1rem;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .currency-box {
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid white;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .currency-box img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .quest-box {
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px dashed var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 12px;
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            margin-bottom: 0;
+            min-width: 0;
+        }
+
+        .quest-text {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #d81b60;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .quest-text img {
+            height: 20px !important;
+        }
+
+        .quest-progress {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #4a5568;
+            margin-left: 5px;
+        }
+
+        #powerups-container {
+            display: flex;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+
+        .powerup-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.8);
+            border: 2px solid white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .powerup-btn:hover {
+            transform: scale(1.1);
+        }
+        .powerup-btn:active {
+            transform: scale(0.95);
+        }
+        .powerup-btn img {
+            width: 65%;
+            height: 65%;
+            object-fit: contain;
+        }
+        .powerup-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid white;
+        }
+        .powerup-buy {
+            position: absolute;
+            bottom: -12px;
+            background: #2ed573;
+            color: white;
+            font-size: 0.65rem;
+            padding: 1px 4px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: 1px solid white;
+            white-space: nowrap;
+            display: none;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .powerup-btn.empty .powerup-buy {
+            display: block;
+        }
+        .powerup-btn.empty img {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        #timer-box {
+            display: none;
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+            border: 2px solid white;
+            text-align: center;
+            width: 100%;
+        }
+        
         #level-progress {
             width: 100%;
-            max-width: 500px;
-            height: 12px;
+            height: 10px;
             background: rgba(255,255,255,0.5);
             border-radius: 10px;
-            margin-bottom: 15px;
             overflow: hidden;
             border: 2px solid white;
+            margin-bottom: 5px;
         }
 
         #level-bar {
@@ -206,10 +387,22 @@
             transition: width 0.4s ease;
         }
 
+        /* Board Area */
+        #board-area {
+            flex: 1 1 auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+            padding: 5px 0;
+        }
+
         #board-wrapper {
             position: relative;
-            width: 90vw;
+            width: 100%;
             max-width: 500px;
+            max-height: 100%;
             aspect-ratio: 1;
             background: var(--panel-bg);
             border-radius: 20px;
@@ -217,7 +410,14 @@
             backdrop-filter: blur(10px);
             border: 3px solid white;
             padding: 5px;
-            overflow: hidden; /* so dropping candies from above are hidden */
+            overflow: hidden;
+        }
+
+        @media (min-aspect-ratio: 1/1) {
+             #board-wrapper {
+                 width: auto;
+                 height: 100%;
+             }
         }
 
         #board {
@@ -230,14 +430,13 @@
             position: absolute;
             width: calc(100% / var(--grid-size, 8));
             height: calc(100% / var(--grid-size, 8));
-            padding: 3px; /* spacing */
+            padding: 3px;
             cursor: pointer;
-            /* Realist physics drop transition: cubic bezier bounce for top */
             transition: top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), 
                         left 0.3s ease-in-out,
                         transform 0.2s ease,
                         opacity 0.2s ease;
-            touch-action: none; /* For mobile dragging */
+            touch-action: none;
         }
         
         .candy-inner {
@@ -261,23 +460,21 @@
 
         /* Zuzu VN Area */
         #zuzu-area {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            flex: 0 0 auto;
             width: 100%;
             max-width: 700px;
-            height: 220px;
-            pointer-events: none;
+            height: 150px;
             display: flex;
             align-items: flex-end;
             justify-content: flex-start;
-            padding: 20px;
+            padding: 5px 10px;
             z-index: 10;
+            margin: 0 auto;
+            pointer-events: none;
         }
 
         #zuzu-img {
-            height: 220px;
+            height: 100%;
             flex-shrink: 0;
             object-fit: contain;
             filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15));
@@ -294,33 +491,31 @@
             background: var(--panel-bg);
             border: 3px solid white;
             border-radius: 20px;
-            padding: 20px 25px;
-            margin-left: 20px;
-            margin-bottom: 30px;
+            padding: 15px 20px;
+            margin-left: 15px;
+            margin-bottom: 20px;
             flex-grow: 1;
-            min-height: 100px;
+            min-height: 80px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
             position: relative;
         }
 
-        /* Tail of speech bubble removed (made transparent) */
         #dialog-box::before {
             content: '';
             position: absolute;
             left: -16px;
-            bottom: 30px;
-            border-width: 15px 18px 15px 0;
+            bottom: 20px;
+            border-width: 12px 16px 12px 0;
             border-style: solid;
             border-color: transparent transparent transparent transparent;
         }
         
         #dialog-text {
-            font-size: 1.3rem;
-            line-height: 1.5;
+            font-size: 1.1rem;
+            line-height: 1.4;
             font-weight: 600;
             color: var(--text-color);
-            /* VERY IMPORTANT: preserves spaces between words */
             white-space: pre-wrap; 
         }
 
@@ -345,23 +540,24 @@
 
         /* Level Up Overlay */
         #level-up-msg {
-            position: absolute;
+            position: fixed;
             inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4.5rem;
+            font-size: 5rem;
             font-weight: 900;
             color: white;
-            text-shadow: 0 0 20px rgba(255,117,140,0.8), 0 0 40px rgba(255,117,140,0.5);
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            z-index: 50;
+            text-shadow: 0 0 20px rgba(255,117,140,1), 0 0 40px rgba(255,117,140,0.8);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 999;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-radius: 20px;
-            transform: scale(0.8);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.9);
+            text-align: center;
+            padding: 20px;
         }
         #level-up-msg.show {
             opacity: 1;
@@ -371,36 +567,6 @@
         @keyframes pulseText {
             0% { transform: scale(1); }
             100% { transform: scale(1.05); }
-        }
-
-        /* Quests */
-        .quest-box {
-            background: rgba(255, 255, 255, 0.4);
-            border: 2px dashed var(--primary-color);
-            padding: 10px 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s;
-        }
-
-        .quest-text {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #d81b60;
-            display: flex;
-            align-items: center;
-        }
-
-        .quest-progress {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: #4a5568;
         }
 
         /* Particles */
@@ -430,121 +596,6 @@
             50% { transform: scale(1.15) rotate(10deg); }
         }
 
-        /* Economy & Powerups Bar */
-        #economy-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-            z-index: 100;
-        }
-        .currency-box {
-            background: rgba(255,255,255,0.8);
-            border-radius: 20px;
-            padding: 6px 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            border: 2px solid white;
-            backdrop-filter: blur(5px);
-        }
-        .currency-box img {
-            width: 24px;
-            height: 24px;
-        }
-        
-        #powerups-container {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .powerup-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 15px;
-            background: rgba(255,255,255,0.8);
-            border: 3px solid white;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-        .powerup-btn:hover {
-            transform: scale(1.1);
-        }
-        .powerup-btn:active {
-            transform: scale(0.95);
-        }
-        .powerup-btn img {
-            width: 70%;
-            height: 70%;
-            object-fit: contain;
-        }
-        .powerup-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff4757;
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid white;
-        }
-        .powerup-buy {
-            position: absolute;
-            bottom: -15px;
-            background: #2ed573;
-            color: white;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-            border: 1px solid white;
-            white-space: nowrap;
-            display: none;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .powerup-btn.empty .powerup-buy {
-            display: block;
-        }
-        .powerup-btn.empty img {
-            opacity: 0.5;
-            filter: grayscale(1);
-        }
-        
-        #timer-box {
-            display: none;
-            background: linear-gradient(45deg, #ff4757, #ff6b81);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            font-weight: 900;
-            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
-            border: 2px solid white;
-            margin-bottom: 10px;
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-        }
-        
         body.bomb-active {
             cursor: crosshair !important;
         }
@@ -554,26 +605,47 @@
         }
 
         @media (max-width: 600px) {
-            #zuzu-area { height: 130px; padding: 5px; }
-            #zuzu-img { height: 130px; }
-            #dialog-box { padding: 12px; margin-left: 10px; margin-bottom: 10px; min-height: 60px; border-width: 2px; }
-            #dialog-box::before { left: -10px; bottom: 15px; border-width: 10px 12px 10px 0; }
-            #dialog-text { font-size: 0.95rem; line-height: 1.3; }
-            .gradient-text { font-size: 3.5rem; }
-            #header { padding: 0 5px; margin-bottom: 10px; }
-            .stat-box { font-size: 0.9rem; padding: 6px 10px; }
-            #board-wrapper { width: 95vw; border-width: 2px; padding: 3px; }
-            #level-progress { margin-bottom: 10px; }
-            #splash-logo { width: 85vw; }
+            #game-container { padding: 5px; }
+            .stat-box { padding: 4px; }
+            .stat-box span.val { font-size: 0.95rem; }
+            .currency-box { font-size: 0.95rem; padding: 4px 6px; }
+            .quest-box { padding: 5px 8px; }
+            .quest-text { font-size: 0.85rem; }
+            .quest-text img { height: 16px !important; }
+            .quest-progress { font-size: 0.85rem; }
+            .powerup-btn { width: 38px; height: 38px; border-width: 2px; }
+            .powerup-badge { width: 16px; height: 16px; font-size: 0.65rem; top: -4px; right: -4px;}
+            #zuzu-area { height: 110px; padding: 0 5px; }
+            #dialog-box { padding: 10px; margin-left: 10px; margin-bottom: 10px; min-height: 50px; border-width: 2px; }
+            #dialog-box::before { left: -12px; bottom: 15px; border-width: 10px 12px 10px 0; }
+            #dialog-text { font-size: 0.9rem; line-height: 1.3; }
+            .gradient-text { font-size: 3.5rem; margin-bottom: 20px; }
+            #level-up-msg { font-size: 3.5rem; }
+            
+            #menu-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .menu-btn {
+                padding: 12px 25px;
+                font-size: 1.2rem;
+                width: 100%;
+                max-width: 250px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash-screen">
+    <!-- Intro Screen (Black screen + logo) -->
+    <div id="intro-screen">
+        <img id="intro-logo" src="Logo/logo.png" alt="MirrCat Logo">
+    </div>
+
+    <!-- Splash/Menu Screen -->
+    <div id="menu-screen">
         <div class="gradient-text">Zuzu Crush</div>
-        <img id="splash-logo" src="Logo/logo.png" alt="MirrCat Logo">
         <div id="menu-buttons">
             <button id="play-btn" class="menu-btn">Serbest Mod</button>
             <button id="time-attack-btn" class="menu-btn time-mode">Zamana Karşı</button>
@@ -583,54 +655,54 @@
     <!-- Game UI -->
     <div id="game-container">
         
-        <!-- Economy & Powerups Bar -->
-        <div id="economy-bar">
-            <div class="currency-box">
-                <img src="Icons/money.png" alt="Money">
-                <span id="money-txt">0</span>
+        <div id="top-ui">
+            <div class="top-row">
+                <div class="stat-box">
+                    <span class="lbl">Bölüm</span>
+                    <span class="val" id="level-txt" style="color: #fb85b4;">1</span>
+                </div>
+                <div class="stat-box">
+                    <span class="lbl">Puan</span>
+                    <span class="val" id="score-txt" style="color: #4facfe;">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="lbl">Hedef</span>
+                    <span class="val" id="target-txt" style="color: #f6d365;">500</span>
+                </div>
+                <div class="currency-box">
+                    <img src="Icons/money.png" alt="Money">
+                    <span id="money-txt">0</span>
+                </div>
             </div>
             
-            <div id="powerups-container">
-                <div class="powerup-btn" id="btn-bomb">
-                    <div class="powerup-badge" id="badge-bomb">3</div>
-                    <img src="power ups/bomb.png" alt="Bomb">
-                    <div class="powerup-buy">100<img src="Icons/money.png" style="width:10px;height:10px;margin-left:2px;vertical-align:middle;"></div>
+            <div id="timer-box">Süre: <span id="time-txt">60</span>s</div>
+            
+            <div class="mid-row">
+                <div id="quest-container" class="quest-box">
+                    <span class="quest-text" id="quest-desc">Görev Bekleniyor...</span>
+                    <span class="quest-progress" id="quest-prog">0/0</span>
                 </div>
-                <div class="powerup-btn" id="btn-time">
-                    <div class="powerup-badge" id="badge-time">3</div>
-                    <img src="power ups/time.png" alt="Time">
-                    <div class="powerup-buy">100<img src="Icons/money.png" style="width:10px;height:10px;margin-left:2px;vertical-align:middle;"></div>
+                <div id="powerups-container">
+                    <div class="powerup-btn" id="btn-bomb">
+                        <div class="powerup-badge" id="badge-bomb">3</div>
+                        <img src="power ups/bomb.png" alt="Bomb">
+                        <div class="powerup-buy">100<img src="Icons/money.png" style="width:10px;height:10px;margin-left:2px;vertical-align:middle;"></div>
+                    </div>
+                    <div class="powerup-btn" id="btn-time">
+                        <div class="powerup-badge" id="badge-time">3</div>
+                        <img src="power ups/time.png" alt="Time">
+                        <div class="powerup-buy">100<img src="Icons/money.png" style="width:10px;height:10px;margin-left:2px;vertical-align:middle;"></div>
+                    </div>
                 </div>
             </div>
+            
+            <div id="level-progress"><div id="level-bar"></div></div>
         </div>
 
-        <div id="timer-box">Süre: <span id="time-txt">60</span>s</div>
-
-        <div id="header">
-            <div class="stat-box">
-                <span>Bölüm</span>
-                <div id="level-txt" style="color: #fb85b4;">1</div>
+        <div id="board-area">
+            <div id="board-wrapper">
+                <div id="board"></div>
             </div>
-            <div class="stat-box">
-                <span>Puan</span>
-                <div id="score-txt" style="color: #4facfe;">0</div>
-            </div>
-            <div class="stat-box">
-                <span>Hedef</span>
-                <div id="target-txt" style="color: #f6d365;">500</div>
-            </div>
-        </div>
-
-        <div id="quest-container" class="quest-box">
-            <span class="quest-text" id="quest-desc">Görev Bekleniyor...</span>
-            <span class="quest-progress" id="quest-prog">0/0</span>
-        </div>
-
-        <div id="level-progress"><div id="level-bar"></div></div>
-
-        <div id="board-wrapper">
-            <div id="level-up-msg">Bölüm Atladın!</div>
-            <div id="board"></div>
         </div>
 
         <div id="zuzu-area">
@@ -640,6 +712,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Level Up Message Overlay -->
+    <div id="level-up-msg">Bölüm Atladın!</div>
 
     <script>
         // --- Sound System (Web Audio API) ---
@@ -1511,13 +1586,30 @@
         }
 
         // --- Boot ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-screen');
+                if(intro) {
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                        const menu = document.getElementById('menu-screen');
+                        if(menu) menu.classList.add('active');
+                    }, 1000);
+                }
+            }, 2000);
+        });
+
         function bootGame(mode) {
-            document.getElementById('splash-screen').style.opacity = '0';
+            const menuScreen = document.getElementById('menu-screen');
+            menuScreen.style.opacity = '0';
+            menuScreen.style.pointerEvents = 'none';
+            
             if(audioCtx.state === 'suspended') audioCtx.resume();
             startMusic();
             
             setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
+                menuScreen.style.display = 'none';
                 document.getElementById('game-container').style.display = 'flex';
                 
                 updateEconomyUI();
